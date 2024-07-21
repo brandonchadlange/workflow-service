@@ -19,7 +19,7 @@ interface HttpActionResponse {
   data: any;
 }
 
-export class HttpRequestHandler
+class HttpRequestHandler
   implements Action<HttpRequestInput, HttpActionResponse>
 {
   get id() {
@@ -39,4 +39,4 @@ export class HttpRequestHandler
   }
 }
 
-new HttpRequestHandler();
+export const httpRequestHandler = new HttpRequestHandler();
