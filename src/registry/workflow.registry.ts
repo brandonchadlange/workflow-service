@@ -11,6 +11,14 @@ export class WorkflowRegistry implements IWorkflowRegistry {
     const workflows = Array.from(this._store.values());
     return workflows;
   }
+
+  findById(id: string): IWorkflow | null {
+    if (!this._store.has(id)) {
+      return null;
+    }
+
+    return this._store.get(id);
+  }
 }
 
 export const workflowRegistry = new WorkflowRegistry();

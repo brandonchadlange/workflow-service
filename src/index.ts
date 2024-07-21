@@ -4,14 +4,16 @@ dotenv.config();
 import { actionRegistry } from "./actions";
 import { workflowRegistry } from "./workflows";
 import { Engine } from "./models";
+import { initialiseWorker, setupApi } from "./setup";
 
-const workflowEngine = new Engine({
+const worker = initialiseWorker();
+
+const engine = new Engine({
   actions: actionRegistry, // can be imported from a directory ?
   workflows: workflowRegistry, // can be imported from a directory ?
+  worker,
 });
 
-import { setupApi } from "./setup";
-
 setupApi({
-  engine: workflowEngine,
+  engine,
 });

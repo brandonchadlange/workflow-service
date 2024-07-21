@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { IEngine } from "../interfaces";
 
 interface SetupApiProps {
@@ -20,6 +20,22 @@ export function setupApi({ engine }: SetupApiProps) {
     res.send(workflowsAsJson);
   });
 
+  app.get("/workflows/:id", (req, res) => {
+    const workflowId = req.params.id;
+    const workflow = engine.workflows.findById(workflowId);
+
+    if (workflow === null) {
+      res.status(404).send("Workflow not found");
+      return;
+    }
+
+    const workflowAsJson = {
+      id: workflow.id,
+    };
+
+    res.send(workflowAsJson);
+  });
+
   // ACTIONS
   app.get("/actions", (req, res) => {
     const actions = engine.actions.findAll();
@@ -30,7 +46,25 @@ export function setupApi({ engine }: SetupApiProps) {
   });
 
   // EXECUTIONS
-  app.get("/executions", (req, res) => {});
+  function validateRequestBody(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const body = req.body;
+
+    if (!body.workflowId) {
+      res.status(400).send("workflowId is required");
+      return;
+    }
+
+    next();
+  }
+
+  app.post("/executions", validateRequestBody, (req, res) => {
+    engine.run("get-drivers", {});
+    res.send(true);
+  });
 
   app.listen(PORT, () => {
     console.log(`Api listening at http://localhost:${PORT}`);
