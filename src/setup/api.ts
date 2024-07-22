@@ -16,6 +16,16 @@ export function setupApi({ engine }: SetupApiProps) {
     const workflows = engine.workflows.findAll();
     const workflowsAsJson = workflows.map((workflow) => ({
       id: workflow.id,
+      steps: workflow.steps.map((step) => ({
+        id: step.id,
+        actionId: step.actionId,
+        config: step.actionConfig,
+      })),
+      transitions: workflow.transitions.map((transition) => ({
+        fromStepId: transition.fromStepId,
+        onStatus: transition.actionStatus,
+        toStepId: transition.toStepId,
+      })),
     }));
     res.send(workflowsAsJson);
   });

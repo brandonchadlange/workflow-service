@@ -15,4 +15,6 @@ export class Execution implements IExecution {
   get id() {
     return this._id;
   }
+
+  getNextJob() {}
 }

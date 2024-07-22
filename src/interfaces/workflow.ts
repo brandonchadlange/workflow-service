@@ -1,15 +1,27 @@
 export interface IWorkflow {
   id: string;
-  addStep(props: AddStepProps): IWorkflowStep;
+  steps: IWorkflowStep[];
+  transitions: IWorkflowTransition[];
+  getInitialStep(): IWorkflowStep;
 }
 
 export interface IWorkflowStep {
   id: string;
+  actionId: string;
+  nextStepId?: string;
+  actionConfig?: any;
+}
+
+export interface IWorkflowTransition {
+  fromStepId?: string;
+  actionStatus?: string;
+  toStepId?: string;
 }
 
 export interface AddStepProps {
   id: string;
   actionId: string;
+  nextStepId?: string;
   actionConfig?: any;
 }
 

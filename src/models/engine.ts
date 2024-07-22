@@ -4,6 +4,7 @@ import {
   IWorkflowRegistry,
   IWorker,
 } from "../interfaces";
+import { Execution } from "./execution";
 
 interface EngineProps {
   actions: IActionRegistry;
@@ -24,7 +25,17 @@ export class Engine implements IEngine {
 
   async run(workflowId: string, data: any) {
     const workflow = this.workflows.findById(workflowId);
-    // get first step
-    console.log("Running Workflow!!!", workflow.id);
+
+    const execution = new Execution({
+      workflow: workflow,
+    });
+
+    const job = execution.getNextJob();
+
+    await this.worker.addJob(execution.id, {
+      executionId: execution.id,
+      state: data,
+      workflowId,
+    });
   }
 }

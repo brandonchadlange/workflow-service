@@ -1,5 +1,4 @@
-import { Action } from "../models";
-
+import { IAction, IActionResponse } from "../interfaces";
 import axios from "axios";
 
 const id = "http-request";
@@ -14,28 +13,47 @@ export interface RegisterHttpRequestAction {
   data: HttpRequestInput;
 }
 
-interface HttpActionResponse {
+interface HttpSuccessResponse {
   status: number;
   data: any;
 }
 
-class HttpRequestHandler
-  implements Action<HttpRequestInput, HttpActionResponse>
-{
+interface HttpErrorResponse {
+  message: any;
+}
+
+type SuccessResponse = IActionResponse<"success", HttpSuccessResponse>;
+type ErrorResponse = IActionResponse<"error", HttpErrorResponse>;
+
+type HttpResponse = SuccessResponse | ErrorResponse;
+
+class HttpRequestHandler implements IAction<HttpRequestInput> {
   get id() {
     return id;
   }
 
-  async handle(data: HttpRequestInput) {
-    const httpResponse = await axios.request({
-      method: data.method,
-      url: data.url,
-    });
+  async handle(data: HttpRequestInput): Promise<HttpResponse> {
+    try {
+      const httpResponse = await axios.request({
+        method: data.method,
+        url: data.url,
+      });
 
-    return {
-      status: httpResponse.status,
-      data: httpResponse.data,
-    };
+      return {
+        status: "success",
+        data: {
+          status: httpResponse.status,
+          data: httpResponse.data,
+        },
+      };
+    } catch (err) {
+      return {
+        status: "error",
+        data: {
+          message: err.message,
+        },
+      };
+    }
   }
 }
 
