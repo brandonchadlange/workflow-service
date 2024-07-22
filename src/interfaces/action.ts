@@ -1,3 +1,5 @@
+import { ICollection } from "./collection";
+
 export interface IAction<Input = any> {
   id: string;
   handle(input: Input): Promise<IActionResponse>;
@@ -8,7 +10,4 @@ export interface IActionResponse<Status = any, Data = any> {
   data: Data;
 }
 
-export interface IActionRegistry {
-  add(action: IAction);
-  findAll(): IAction[];
-}
+export interface IActionRegistry extends ICollection<IAction> {}

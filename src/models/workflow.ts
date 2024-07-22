@@ -1,4 +1,5 @@
 import { IWorkflow, IWorkflowStep, IWorkflowTransition } from "../interfaces";
+import { Collection } from "./collection";
 
 interface AddStepProps {
   id: string;
@@ -15,7 +16,7 @@ interface AddTransitionProps {
 
 export class Workflow implements IWorkflow {
   private _id: string;
-  private _steps: IWorkflowStep[] = [];
+  private _steps = new Collection<IWorkflowStep>();
   private _transitions: IWorkflowTransition[] = [];
 
   constructor(id: string) {
@@ -39,7 +40,7 @@ export class Workflow implements IWorkflow {
       ...props,
       workflow: this,
     });
-    this._steps.push(step);
+    this._steps.add(step);
     return step;
   }
 
@@ -57,14 +58,11 @@ export class Workflow implements IWorkflow {
       (e) => e.fromStepId === undefined
     );
 
-    const initialStep = this._steps.find(
-      (e) => e.id === initialTransition.toStepId
-    );
+    const initialStep = this._steps.findById(initialTransition.toStepId);
 
     return initialStep;
   }
 }
-
 export class Step implements IWorkflowStep {
   private _id: string;
   private _actionId: string;

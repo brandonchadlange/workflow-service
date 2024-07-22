@@ -1,16 +1,10 @@
 import { IAction, IActionResponse } from "../interfaces";
 import axios from "axios";
 
-const id = "http-request";
-
+const ACTION_ID = "http-request";
 interface HttpRequestInput {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   url: string;
-}
-
-export interface RegisterHttpRequestAction {
-  id: typeof id;
-  data: HttpRequestInput;
 }
 
 interface HttpSuccessResponse {
@@ -24,13 +18,10 @@ interface HttpErrorResponse {
 
 type SuccessResponse = IActionResponse<"success", HttpSuccessResponse>;
 type ErrorResponse = IActionResponse<"error", HttpErrorResponse>;
-
 type HttpResponse = SuccessResponse | ErrorResponse;
 
 class HttpRequestHandler implements IAction<HttpRequestInput> {
-  get id() {
-    return id;
-  }
+  id = ACTION_ID;
 
   async handle(data: HttpRequestInput): Promise<HttpResponse> {
     try {
@@ -38,6 +29,8 @@ class HttpRequestHandler implements IAction<HttpRequestInput> {
         method: data.method,
         url: data.url,
       });
+
+      console.log("HTTP SUCCESS");
 
       return {
         status: "success",
@@ -47,6 +40,8 @@ class HttpRequestHandler implements IAction<HttpRequestInput> {
         },
       };
     } catch (err) {
+      console.log("HTTP ERROR");
+
       return {
         status: "error",
         data: {

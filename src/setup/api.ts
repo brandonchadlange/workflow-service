@@ -1,22 +1,25 @@
 import express, { NextFunction, Request, Response } from "express";
-import { IEngine } from "../interfaces";
+import { IActionRegistry, IWorker, IWorkflowRegistry } from "../interfaces";
 
 interface SetupApiProps {
-  engine: IEngine;
+  actions: IActionRegistry;
+  workflows: IWorkflowRegistry;
+  worker: IWorker;
 }
 
 const PORT = process.env.PORT || 3000;
 
-export function setupApi({ engine }: SetupApiProps) {
+export function setupApi(props: SetupApiProps) {
   const app = express();
   app.use(express.json());
 
   // WORKFLOWS
   app.get("/workflows", (req, res) => {
-    const workflows = engine.workflows.findAll();
+    const workflows = props.workflows.findAll();
+
     const workflowsAsJson = workflows.map((workflow) => ({
       id: workflow.id,
-      steps: workflow.steps.map((step) => ({
+      steps: workflow.steps.findAll().map((step) => ({
         id: step.id,
         actionId: step.actionId,
         config: step.actionConfig,
@@ -32,7 +35,7 @@ export function setupApi({ engine }: SetupApiProps) {
 
   app.get("/workflows/:id", (req, res) => {
     const workflowId = req.params.id;
-    const workflow = engine.workflows.findById(workflowId);
+    const workflow = props.workflows.findById(workflowId);
 
     if (workflow === null) {
       res.status(404).send("Workflow not found");
@@ -48,7 +51,7 @@ export function setupApi({ engine }: SetupApiProps) {
 
   // ACTIONS
   app.get("/actions", (req, res) => {
-    const actions = engine.actions.findAll();
+    const actions = props.actions.findAll();
     const actionsAsJson = actions.map((action) => ({
       id: action.id,
     }));
@@ -72,7 +75,21 @@ export function setupApi({ engine }: SetupApiProps) {
   }
 
   app.post("/executions", validateRequestBody, (req, res) => {
-    engine.run("get-drivers", {});
+    // const workflow = this.workflows.findById(workflowId);
+    // const initialStep = workflow.getInitialStep();
+    // const jobId = `${initialStep.id}-${randomUUID()}`;
+
+    // const execution = new Execution({
+    //   workflow,
+    // });
+
+    // execution.setCurrentStepId(initialStep.id);
+
+    // await this.worker.addJob(jobId, {
+    //   workflowId,
+    //   stepId: initialStep.id,
+    //   state: data,
+    // });
     res.send(true);
   });
 

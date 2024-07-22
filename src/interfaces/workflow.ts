@@ -1,6 +1,8 @@
+import { ICollection } from "./collection";
+
 export interface IWorkflow {
   id: string;
-  steps: IWorkflowStep[];
+  steps: ICollection<IWorkflowStep>;
   transitions: IWorkflowTransition[];
   getInitialStep(): IWorkflowStep;
 }
@@ -25,8 +27,4 @@ export interface AddStepProps {
   actionConfig?: any;
 }
 
-export interface IWorkflowRegistry {
-  add(action: IWorkflow);
-  findAll(): IWorkflow[];
-  findById(id: string): IWorkflow | null;
-}
+export interface IWorkflowRegistry extends ICollection<IWorkflow> {}

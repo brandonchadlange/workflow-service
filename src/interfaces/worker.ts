@@ -3,7 +3,7 @@ export interface IWorker {
 }
 
 export interface IWorkerData {
-  executionId: string;
   workflowId: string;
+  stepId: string;
   state: any;
 }
